@@ -1,0 +1,192 @@
+
+SQL*Plus: Release 10.2.0.1.0 - Production on Thu Dec 4 12:13:09 2025
+
+Copyright (c) 1982, 2005, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 10g Enterprise Edition Release 10.2.0.1.0 - Production
+With the Partitioning, OLAP and Data Mining options
+
+SQL> CREATE TABLE CUSTOMERS1 (
+  2      cust_id NUMBER PRIMARY KEY,
+  3      cust_name VARCHAR2(50),
+  4      cust_email VARCHAR2(50),
+  5      cust_phone VARCHAR2(15),
+  6      cust_address VARCHAR2(100)
+  7  );
+
+Table created.
+
+SQL> CREATE TABLE MENU1 (
+  2      menu_id NUMBER PRIMARY KEY,
+  3      item_name VARCHAR2(50),
+  4      cuisine VARCHAR2(30),
+  5      price NUMBER(7,2),
+  6      available NUMBER
+  7  );
+
+Table created.
+
+SQL> CREATE TABLE ORDERS1 (
+  2      order_id NUMBER PRIMARY KEY,
+  3      cust_id NUMBER,
+  4      order_date DATE,
+  5      total_amt NUMBER(10,2),
+  6      delivery_address VARCHAR2(100),
+  7      FOREIGN KEY (cust_id) REFERENCES CUSTOMERS1(cust_id)
+  8  );
+
+Table created.
+
+SQL> CREATE TABLE ORDER_ITEMS1 (
+  2      order_item_id NUMBER PRIMARY KEY,
+  3      order_id NUMBER,
+  4      menu_id NUMBER,
+  5      quantity NUMBER,
+  6      item_price NUMBER(7,2),
+  7      FOREIGN KEY (order_id) REFERENCES ORDERS1(order_id),
+  8      FOREIGN KEY (menu_id) REFERENCES MENU1(menu_id)
+  9  );
+
+Table created.
+
+SQL> INSERT INTO CUSTOMERS1 VALUES (1, 'Amit Kumar', 'amit@gmail.com', '9876543210', 'MG Road, Delhi
+');
+
+1 row created.
+
+SQL> INSERT INTO CUSTOMERS1 VALUES (2, 'Priya Singh', 'priya@gmail.com', '9001234567', 'Brigade Road
+, Bangalore');
+
+1 row created.
+
+SQL> INSERT INTO CUSTOMERS1 VALUES (3, 'Rohit Sharma', 'rohit@gmail.com', '9123456780', 'Indiranagar
+, Bangalore');
+
+1 row created.
+
+SQL> INSERT INTO CUSTOMERS1 VALUES (4, 'Sneha Verma', 'sneha@gmail.com', '9012345678', 'Andheri, Mum
+bai');
+
+1 row created.
+
+SQL> INSERT INTO CUSTOMERS1 VALUES (5, 'Kavita Nair', 'kavita@gmail.com', '9988776655', 'Salt Lake, 
+Kolkata');
+
+1 row created.
+
+SQL> INSERT INTO MENU1 VALUES (101, 'Margherita Pizza', 'Italian', 250, 10);
+
+1 row created.
+
+SQL> INSERT INTO MENU1 VALUES (102, 'Veg Biryani', 'Indian', 180, 15);
+
+1 row created.
+
+SQL> INSERT INTO MENU1 VALUES (103, 'Chicken Burger', 'American', 150, 20);
+
+1 row created.
+
+SQL> INSERT INTO MENU1 VALUES (104, 'Pasta Alfredo', 'Italian', 220, 8);
+
+1 row created.
+
+SQL> INSERT INTO MENU1 VALUES (105, 'Paneer Tikka', 'Indian', 200, 12);
+
+1 row created.
+
+SQL> INSERT INTO ORDERS1 VALUES (1001, 1, SYSDATE, 430, 'MG Road, Delhi');
+
+1 row created.
+
+SQL> INSERT INTO ORDERS1 VALUES (1002, 2, SYSDATE, 370, 'Brigade Road, Bangalore');
+
+1 row created.
+
+SQL> INSERT INTO ORDERS1 VALUES (1003, 3, SYSDATE, 150, 'Indiranagar, Bangalore');
+
+1 row created.
+
+SQL> INSERT INTO ORDERS1 VALUES (1004, 4, SYSDATE, 420, 'Andheri, Mumbai');
+
+1 row created.
+
+SQL> INSERT INTO ORDERS1 VALUES (1005, 5, SYSDATE, 250, 'Salt Lake, Kolkata');
+
+1 row created.
+
+SQL> INSERT INTO ORDER_ITEMS1 VALUES (1, 1001, 101, 1, 250);
+
+1 row created.
+
+SQL> INSERT INTO ORDER_ITEMS1 VALUES (2, 1001, 102, 1, 180);
+
+1 row created.
+
+SQL> INSERT INTO ORDER_ITEMS1 VALUES (3, 1002, 102, 2, 360);
+
+1 row created.
+
+SQL> INSERT INTO ORDER_ITEMS1 VALUES (4, 1003, 103, 1, 150);
+
+1 row created.
+
+SQL> INSERT INTO ORDER_ITEMS1 VALUES (5, 1004, 101, 1, 250);
+
+1 row created.
+
+SQL> INSERT INTO ORDER_ITEMS1 VALUES (6, 1004, 105, 1, 200);
+
+1 row created.
+
+SQL> INSERT INTO ORDER_ITEMS1 VALUES (7, 1005, 101, 1, 250);
+
+1 row created.
+
+SQL> SET PAGES 1000 LINES 500
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> SELECT c.cust_name, o.order_id, o.total_amt
+  2  FROM CUSTOMERS1 c
+  3  JOIN ORDERS1 o ON c.cust_id = o.cust_id;
+
+CUST_NAME                                            ORDER_ID  TOTAL_AMT
+-------------------------------------------------- ---------- ----------
+Amit Kumar                                               1001        430
+Priya Singh                                              1002        370
+Rohit Sharma                                             1003        150
+Sneha Verma                                              1004        420
+Kavita Nair                                              1005        250
+
+SQL> SELECT o.order_id, m.item_name, oi.quantity, oi.item_price
+  2  FROM ORDER_ITEMS1 oi
+  3  JOIN ORDERS1 o ON oi.order_id = o.order_id
+  4  JOIN MENU1 m ON oi.menu_id = m.menu_id;
+
+  ORDER_ID ITEM_NAME                                            QUANTITY ITEM_PRICE
+---------- -------------------------------------------------- ---------- ----------
+      1001 Margherita Pizza                                            1        250
+      1001 Veg Biryani                                                 1        180
+      1002 Veg Biryani                                                 2        360
+      1003 Chicken Burger                                              1        150
+      1004 Margherita Pizza                                            1        250
+      1004 Paneer Tikka                                                1        200
+      1005 Margherita Pizza                                            1        250
+
+7 rows selected.
+
+SQL> SELECT SUM(total_amt) AS total_revenue FROM ORDERS1;
+
+TOTAL_REVENUE
+-------------
+         1620
+
+SQL> SELECT item_name, available FROM MENU1 WHERE available < 10;
+
+ITEM_NAME                                           AVAILABLE
+-------------------------------------------------- ----------
+Pasta Alfredo                                               8
+
