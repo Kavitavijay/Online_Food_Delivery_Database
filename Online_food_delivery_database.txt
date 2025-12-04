@@ -1,13 +1,3 @@
-
-SQL*Plus: Release 10.2.0.1.0 - Production on Thu Dec 4 12:13:09 2025
-
-Copyright (c) 1982, 2005, Oracle.  All rights reserved.
-
-
-Connected to:
-Oracle Database 10g Enterprise Edition Release 10.2.0.1.0 - Production
-With the Partitioning, OLAP and Data Mining options
-
 SQL> CREATE TABLE CUSTOMERS1 (
   2      cust_id NUMBER PRIMARY KEY,
   3      cust_name VARCHAR2(50),
@@ -189,4 +179,5 @@ SQL> SELECT item_name, available FROM MENU1 WHERE available < 10;
 ITEM_NAME                                           AVAILABLE
 -------------------------------------------------- ----------
 Pasta Alfredo                                               8
+
 
